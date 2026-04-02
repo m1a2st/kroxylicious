@@ -11,6 +11,21 @@ import io.fabric8.kubernetes.api.model.KubernetesResource;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
 
+/**
+ * Base class for {@link LocalRef} subtypes whose {@code group} and {@code kind} are
+ * <em>not</em> known at compile time and must therefore be supplied by the user and
+ * serialized to JSON.
+ *
+ * <p>This class is intentionally package-private.  It exists solely to share the
+ * Jackson field declarations and accessor implementations between {@link AnyLocalRef}
+ * and other dynamically-typed ref classes such as {@link CertificateRef}, which may
+ * reference resources of different kinds depending on the operator environment
+ * (e.g. a Kubernetes {@code Secret} or a cert-manager {@code Certificate}).</p>
+ *
+ * <p>Contrast with the statically-typed ref classes (e.g. {@link ProxyRef}, {@link FilterRef}),
+ * which extend {@link LocalRef} directly and hardcode their {@code group} and {@code kind}
+ * as constants that are not serialized to JSON.</p>
+ */
 abstract class AbstractLocalRef extends LocalRef<HasMetadata> implements KubernetesResource {
     @com.fasterxml.jackson.annotation.JsonProperty("group")
     @io.fabric8.generator.annotation.Pattern("^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
